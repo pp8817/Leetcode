@@ -1,10 +1,15 @@
 SELECT 
     ROUND(
-        SUM(d0.customer_pref_delivery_date=d0.order_date)*100/COUNT(*)
+        SUM(customer_pref_delivery_date = order_date) * 100.0 / COUNT(*)
     , 2) AS immediate_percentage
 FROM (
-    SELECT 
-    delivery_id,
-    ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date ASC) AS rn
-    FROM Delivery) d1 JOIN Delivery d0 ON d1.delivery_id = d0.delivery_id
+    SELECT
+        order_date,
+        customer_pref_delivery_date,
+        ROW_NUMBER() OVER (
+            PARTITION BY customer_id
+            ORDER BY order_date
+        ) AS rn
+    FROM Delivery
+) t
 WHERE rn = 1;
